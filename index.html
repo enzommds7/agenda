@@ -29,51 +29,51 @@
 
     /* ── DARK (default) ── */
     :root {
-      --bg-deep: #0d0f1a;
-      --bg-surface: #12152a;
-      --bg-card: rgba(255, 255, 255, 0.04);
-      --bg-card-hover: rgba(255, 255, 255, 0.07);
+      --bg-deep: #1C1C1E;
+      --bg-surface: #2C2C2E;
+      --bg-card: rgba(255, 255, 255, 0.05);
+      --bg-card-hover: rgba(255, 255, 255, 0.08);
       --bg-input: rgba(255, 255, 255, 0.05);
-      --border: rgba(255, 255, 255, 0.08);
-      --border-focus: rgba(139, 92, 246, 0.5);
-      --accent: #8b5cf6;
-      --accent-light: #a78bfa;
-      --accent-glow: rgba(139, 92, 246, 0.25);
-      --gold: #f59e0b;
-      --gold-light: #fbbf24;
-      --text-primary: #f1f5f9;
-      --text-secondary: #94a3b8;
-      --text-muted: #475569;
-      --success: #10b981;
-      --danger: #ef4444;
-      --warning: #f59e0b;
+      --border: rgba(255, 255, 255, 0.1);
+      --border-focus: rgba(64, 180, 166, 0.5);
+      --accent: #40B4A6;
+      --accent-light: #52C7B8;
+      --accent-glow: rgba(64, 180, 166, 0.2);
+      --gold: #E9C46A;
+      --gold-light: #F4A261;
+      --text-primary: #F2F2F7;
+      --text-secondary: #AEAEB2;
+      --text-muted: #8E8E93;
+      --success: #2A9D8F;
+      --danger: #E76F51;
+      --warning: #E9C46A;
       --sidebar-w: 305px;
       --radius: 12px;
       --radius-sm: 8px;
-      --shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+      --shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
       --transition: 0.25s ease;
     }
 
     /* ── LIGHT ── */
     :root.light {
-      --bg-deep: #f0f2f8;
-      --bg-surface: #ffffff;
-      --bg-card: rgba(0, 0, 0, 0.04);
-      --bg-card-hover: rgba(0, 0, 0, 0.07);
-      --bg-input: rgba(0, 0, 0, 0.04);
-      --border: rgba(0, 0, 0, 0.1);
-      --border-focus: rgba(109, 40, 217, 0.4);
-      --accent: #7c3aed;
-      --accent-light: #6d28d9;
-      --accent-glow: rgba(124, 58, 237, 0.2);
-      --gold: #d97706;
-      --gold-light: #b45309;
-      --text-primary: #1e1b4b;
-      --text-secondary: #4b5563;
-      --text-muted: #9ca3af;
-      --success: #059669;
-      --danger: #dc2626;
-      --shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+      --bg-deep: #F5F1EB;
+      --bg-surface: #FFFFFF;
+      --bg-card: rgba(0, 0, 0, 0.03);
+      --bg-card-hover: rgba(0, 0, 0, 0.06);
+      --bg-input: rgba(0, 0, 0, 0.03);
+      --border: rgba(0, 0, 0, 0.08);
+      --border-focus: rgba(42, 157, 143, 0.3);
+      --accent: #2A9D8F;
+      --accent-light: #40B4A6;
+      --accent-glow: rgba(42, 157, 143, 0.15);
+      --gold: #E9C46A;
+      --gold-light: #F4A261;
+      --text-primary: #1A1A1A;
+      --text-secondary: #6B7280;
+      --text-muted: #9CA3AF;
+      --success: #2A9D8F;
+      --danger: #E76F51;
+      --shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
     }
 
     html,
@@ -86,20 +86,7 @@
       transition: background var(--transition), color var(--transition);
     }
 
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: 0;
-      background: radial-gradient(ellipse 80% 50% at 20% -10%, rgba(139, 92, 246, 0.13) 0%, transparent 60%),
-        radial-gradient(ellipse 60% 40% at 80% 110%, rgba(245, 158, 11, 0.07) 0%, transparent 55%);
-      transition: opacity var(--transition);
-    }
-
-    :root.light body::before {
-      opacity: 0.3;
-    }
+    /* Removed body gradients for cleaner look */
 
     /* ══════════ AUTH SCREEN ══════════ */
     #authScreen {
@@ -1714,6 +1701,20 @@
         font-size: 11.5px;
       }
     }
+    /* ────── Desktop Sidebar Collapse ────── */
+    @media (min-width: 769px) {
+      #sidebar.collapsed {
+        width: 0 !important;
+        min-width: 0 !important;
+        padding: 0 !important;
+        border: none !important;
+        overflow: hidden !important;
+        opacity: 0;
+      }
+      #sidebar.collapsed + #main #hamburgerBtn {
+        display: flex !important;
+      }
+    }
   </style>
 </head>
 
@@ -1750,7 +1751,7 @@
         <input class="auth-input pass" id="authConfirm" type="password" placeholder="••••••••" />
       </div>
       <div class="auth-err" id="authErr"></div>
-      <button class="auth-btn" id="authSubmitBtn">
+      <button class="auth-btn glass-btn" id="authSubmitBtn">
         <span id="authBtnLabel">Entrar</span>
       </button>
       <div class="auth-divider">ou</div>
@@ -1772,6 +1773,9 @@
             </div>
           </div>
           <div class="logo-actions">
+            <button class="icon-pill" id="collapseSidebarBtn" title="Ocultar painel lateral">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
             <button class="icon-pill" id="themeToggleBtn" title="Alternar tema">&#x1F319;</button>
             <button class="icon-pill" id="settingsBtn" title="Configuracoes">&#x2699;</button>
           </div>
@@ -1792,7 +1796,7 @@
           <input id="searchInput" type="text" placeholder="Buscar ou #tag..." autocomplete="off" />
         </div>
         <div id="tagFilterBar"></div>
-        <button class="new-day-btn" id="newDayBtn">
+        <button class="new-day-btn glass-btn" id="newDayBtn">
           <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
             <path d="M12 5v14M5 12h14" />
           </svg>
@@ -1818,7 +1822,7 @@
       <div id="daysList"></div>
 
       <div class="sidebar-footer">
-        <button class="footer-btn" id="backupBtn">
+        <button class="footer-btn glass-btn" id="backupBtn">
           <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
             <polyline points="7 10 12 15 17 10" />
@@ -1826,7 +1830,7 @@
           </svg>
           Backup
         </button>
-        <button class="footer-btn" id="restoreBtn">
+        <button class="footer-btn glass-btn" id="restoreBtn">
           <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
             <path d="M21 3v5h-5" />
@@ -1870,7 +1874,7 @@
             </div>
             <div class="editor-actions">
               <div id="saveStatus"><span class="status-dot"></span><span id="saveStatusText">Salvo</span></div>
-              <button class="icon-btn" id="exportBtn">
+              <button class="icon-btn glass-btn" id="exportBtn">
                 <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                   <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                   <polyline points="7 10 12 15 17 10" />
@@ -1890,8 +1894,8 @@
             </div>
           
           <div class="editor-inner-tabs">
-            <button class="inner-tab active" id="tabText">📝 Texto</button>
-            <button class="inner-tab" id="tabGallery">🖼️ Galeria</button>
+            <button class="inner-tab active" id="tabText">Texto</button>
+            <button class="inner-tab" id="tabGallery">Galeria</button>
           </div>
         </div>
         <div class="tag-row">
@@ -2116,7 +2120,7 @@
 
     /* ────── Theme ────── */
     function loadTheme() {
-      document.documentElement.classList.toggle('light', localStorage.getItem(SK_THEME) === 'light');
+      const saved = localStorage.getItem(SK_THEME); document.documentElement.classList.toggle('light', saved === 'light' || !saved);
       updateThemeBtn();
     }
     function toggleTheme() {
@@ -2127,17 +2131,17 @@
     }
     function updateThemeBtn() {
       const isL = document.documentElement.classList.contains('light');
-      $('themeToggleBtn').textContent = isL ? '☀️' : '🌙';
+      $('themeToggleBtn').innerHTML = isL ? '<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>' : '<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
       const sb = $('settingsThemeBtn');
       if (sb) sb.textContent = isL ? 'Mudar para Escuro' : 'Mudar para Claro';
     }
 
     /* ────── Tag colors ────── */
     const PALETTE = [
-      ['#8b5cf6', 'rgba(139,92,246,0.18)'], ['#10b981', 'rgba(16,185,129,0.18)'],
-      ['#f59e0b', 'rgba(245,158,11,0.18)'], ['#ef4444', 'rgba(239,68,68,0.18)'],
-      ['#3b82f6', 'rgba(59,130,246,0.18)'], ['#ec4899', 'rgba(236,72,153,0.18)'],
-      ['#14b8a6', 'rgba(20,184,166,0.18)'], ['#f97316', 'rgba(249,115,22,0.18)'],
+      ['#2A9D8F', 'rgba(42, 157, 143, 0.15)'], ['#E9C46A', 'rgba(233, 196, 106, 0.15)'],
+      ['#F4A261', 'rgba(244, 162, 97, 0.15)'], ['#E76F51', 'rgba(231, 111, 81, 0.15)'],
+      ['#264653', 'rgba(38, 70, 83, 0.1)'], ['#6B7280', 'rgba(107, 114, 128, 0.15)'],
+      ['#3B82F6', 'rgba(59, 130, 246, 0.1)'], ['#8B5CF6', 'rgba(139, 92, 246, 0.1)'],
     ];
     function tagColor(name) { let h = 0; for (let i = 0; i < name.length; i++)h = (h * 31 + name.charCodeAt(i)) >>> 0; return PALETTE[h % PALETTE.length]; }
     function renderTagChip(name, withDel) {
@@ -2305,12 +2309,12 @@
         const email = currentUser.email || '';
         $('userEmail').textContent = email;
         $('userAvatar').textContent = (email[0] || '?').toUpperCase();
-        $('userMode').textContent = FB_ON ? 'Sincronizado na nuvem ☁' : 'Modo local';
+        $('userMode').textContent = FB_ON ? 'Sincronizado na nuvem' : 'Modo local';
         setSyncStatus('synced');
       } else if (currentUser === null) {
         bar.style.display = 'flex';
         $('userEmail').textContent = 'Modo offline';
-        $('userAvatar').textContent = '👤';
+        $('userAvatar').innerHTML = '<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>';
         $('userMode').textContent = 'Dados salvos localmente';
         setSyncStatus('offline');
       } else {
@@ -2411,7 +2415,16 @@
       $('sidebar').classList.remove('open');
       $('sidebarBackdrop').classList.remove('show');
     }
-    $('hamburgerBtn').addEventListener('click', () => { $('sidebar').classList.contains('open') ? closeSidebar() : openSidebar(); });
+    $('hamburgerBtn').addEventListener('click', () => { 
+      if (window.innerWidth <= 768) {
+        $('sidebar').classList.contains('open') ? closeSidebar() : openSidebar(); 
+      } else {
+        $('sidebar').classList.remove('collapsed');
+      }
+    });
+    $('collapseSidebarBtn').addEventListener('click', () => {
+      $('sidebar').classList.add('collapsed');
+    });
     $('sidebarBackdrop').addEventListener('click', closeSidebar);
     // Close sidebar on day item click (mobile)
     $('daysList').addEventListener('click', () => { if (window.innerWidth <= 768) closeSidebar(); });
@@ -2424,7 +2437,13 @@
       const ham = $('hamburgerBtn').cloneNode(true);
       $('tabsBar').innerHTML = '';
       $('tabsBar').appendChild(ham);
-      ham.addEventListener('click', () => { $('sidebar').classList.contains('open') ? closeSidebar() : openSidebar(); });
+      ham.addEventListener('click', () => { 
+        if (window.innerWidth <= 768) {
+          $('sidebar').classList.contains('open') ? closeSidebar() : openSidebar(); 
+        } else {
+          $('sidebar').classList.remove('collapsed');
+        }
+      });
       openTabs.forEach(k => {
         const ac = k === activeTab ? ' active' : '';
         const tab = document.createElement('div');
@@ -2543,7 +2562,7 @@
     function createOrOpen(key) {
       const existed = allKeys().includes(key);
       openTab(key);
-      if (!existed) toast('Nova anotacao criada!', '📝');
+      if (!existed) toast('Nova anotacao criada!', '');
     }
     function pickDateModal() {
       openModal({
@@ -2569,7 +2588,7 @@
               await delDay(key);
               if (openTabs.includes(key)) closeTab(key);
               else { renderSidebar($('searchInput').value); renderCalendar(); }
-              renderTagFilterBar(); toast('Anotacao excluida.', '🗑️');
+              renderTagFilterBar(); toast('Anotacao excluida.', '');
             }
           }
         ]
@@ -2586,7 +2605,7 @@
       const blob = new Blob([txt], { type: 'text/plain;charset=utf-8' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a'); a.href = url; a.download = `agenda_${activeTab}.txt`; a.click();
-      URL.revokeObjectURL(url); toast('Exportado!', '💾');
+      URL.revokeObjectURL(url); toast('Exportado!', '');
     });
 
     /* ────── Backup / Restore ────── */
@@ -2596,7 +2615,7 @@
       const blob = new Blob([json], { type: 'application/json;charset=utf-8' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a'); a.href = url; a.download = `agenda_backup_${todayKey()}.json`; a.click();
-      URL.revokeObjectURL(url); toast('Backup exportado!', '💾');
+      URL.revokeObjectURL(url); toast('Backup exportado!', '');
     }
     function doRestore() { $('restoreFileInput').click(); }
     $('backupBtn').addEventListener('click', doBackup);
@@ -2618,18 +2637,18 @@
               {
                 label: 'Mesclar', cls: 'btn-secondary', cb: () => {
                   const cur = loadLocal(); Object.assign(cur, importedDays); saveLocal(cur);
-                  refreshAll(); toast(`${count} dia(s) importados (mesclado).`, '✅');
+                  refreshAll(); toast(`${count} dia(s) importados (mesclado).`, '');
                 }
               },
               {
                 label: 'Substituir tudo', cls: 'btn-danger', cb: () => {
                   saveLocal(importedDays); openTabs = []; activeTab = null;
-                  refreshAll(); showWelcome(); toast(`${count} dia(s) importados.`, '✅');
+                  refreshAll(); showWelcome(); toast(`${count} dia(s) importados.`, '');
                 }
               }
             ]
           });
-        } catch (e) { toast('Arquivo invalido.', '❌'); }
+        } catch (e) { toast('Arquivo invalido.', ''); }
       };
       reader.readAsText(file); e.target.value = '';
     });
@@ -2859,7 +2878,7 @@ window.addEventListener('paste', async (e) => {
     await setDay(activeTab, day.content, day.tags, day.images);
     renderGallery();
     setSave('saved');
-    toast('Imagem colada na galeria!', '🖼️');
+    toast('Imagem colada na galeria!', '');
   }
 });
 
