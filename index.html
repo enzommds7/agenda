@@ -2752,12 +2752,11 @@ $('imgUploadInput').addEventListener('change', async e => {
     // Push ref
     day.images.push(imgId);
     
-    // Sync to Cloud Storage if online
+    // Sync to Cloud Storage if online (fire-and-forget, non-blocking)
     if(currentUser && FB_ON && storage) {
-      try {
-        const ref = storage.ref(`users/${currentUser.uid}/images/${activeTab}/${imgId}.jpg`);
-        await ref.putString(dataUrl, 'data_url');
-      } catch(err) { console.warn('Cloud upload failed', err); }
+      storage.ref(`users/${currentUser.uid}/images/${activeTab}/${imgId}.jpg`)
+        .putString(dataUrl, 'data_url')
+        .catch(err => console.warn('Cloud upload failed', err));
     }
   }
   
@@ -2813,10 +2812,9 @@ async function deleteImage(imgId) {
   await setDay(activeTab, day.content, day.tags, day.images);
   
   await idbDel(imgId);
+  // Cloud delete in background (non-blocking)
   if(currentUser && FB_ON && storage) {
-    try {
-      await storage.ref(`users/${currentUser.uid}/images/${activeTab}/${imgId}.jpg`).delete();
-    } catch(e){}
+    storage.ref(`users/${currentUser.uid}/images/${activeTab}/${imgId}.jpg`).delete().catch(() => {});
   }
   
   renderGallery();
@@ -2850,11 +2848,11 @@ window.addEventListener('paste', async (e) => {
       await idbSave(imgId, dataUrl);
       day.images.push(imgId);
       
+      // Cloud upload in background (non-blocking)
       if (currentUser && FB_ON && storage) {
-        try {
-          const ref = storage.ref(`users/${currentUser.uid}/images/${activeTab}/${imgId}.jpg`);
-          await ref.putString(dataUrl, 'data_url');
-        } catch(err) { console.warn('Cloud upload failed', err); }
+        storage.ref(`users/${currentUser.uid}/images/${activeTab}/${imgId}.jpg`)
+          .putString(dataUrl, 'data_url')
+          .catch(err => console.warn('Cloud upload failed', err));
       }
     }
     
