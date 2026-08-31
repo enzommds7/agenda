@@ -2823,6 +2823,48 @@ async function deleteImage(imgId) {
   setSave('saved');
 }
 
+
+// Suporte a colar print direto (Win + Shift + S -> Ctrl + V) na Galeria
+window.addEventListener('paste', async (e) => {
+  if (!activeTab) return;
+  const items = (e.clipboardData || window.clipboardData)?.items;
+  if (!items) return;
+  
+  let imageFiles = [];
+  for (let item of items) {
+    if (item.type.indexOf('image') !== -1) {
+      const file = item.getAsFile();
+      if (file) imageFiles.push(file);
+    }
+  }
+  
+  if (imageFiles.length > 0 && $('tabGallery').classList.contains('active')) {
+    e.preventDefault();
+    setSave('saving');
+    let day = localGetDay(activeTab);
+    if (!day.images) day.images = [];
+    
+    for (let file of imageFiles) {
+      const dataUrl = await compressImage(file);
+      const imgId = 'img_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+      await idbSave(imgId, dataUrl);
+      day.images.push(imgId);
+      
+      if (currentUser && FB_ON && storage) {
+        try {
+          const ref = storage.ref(`users/${currentUser.uid}/images/${activeTab}/${imgId}.jpg`);
+          await ref.putString(dataUrl, 'data_url');
+        } catch(err) { console.warn('Cloud upload failed', err); }
+      }
+    }
+    
+    await setDay(activeTab, day.content, day.tags, day.images);
+    renderGallery();
+    setSave('saved');
+    toast('Imagem colada na galeria!', '🖼️');
+  }
+});
+
 $('lbClose').addEventListener('click', () => $('lightbox').classList.remove('show'));
 $('lightbox').addEventListener('click', e => { if(e.target === $('lightbox')) $('lightbox').classList.remove('show'); });
 
