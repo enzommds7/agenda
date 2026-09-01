@@ -10,6 +10,8 @@
     :root {
       --bg-deep: #1C1C1E;
       --bg-surface: #2C2C2E;
+      --bg-surface-glass: rgba(44, 44, 46, 0.75);
+      --bg-deep-glass: rgba(28, 28, 30, 0.75);
       --bg-card: rgba(255, 255, 255, 0.05);
       --bg-card-hover: rgba(255, 255, 255, 0.08);
       --bg-input: rgba(255, 255, 255, 0.05);
@@ -37,6 +39,8 @@
     :root.light {
       --bg-deep: #F5F1EB;
       --bg-surface: #FFFFFF;
+      --bg-surface-glass: rgba(255, 255, 255, 0.75);
+      --bg-deep-glass: rgba(245, 241, 235, 0.75);
       --bg-card: rgba(0, 0, 0, 0.03);
       --bg-card-hover: rgba(0, 0, 0, 0.06);
       --bg-input: rgba(0, 0, 0, 0.03);
@@ -921,7 +925,9 @@
     }
 
     .tab.active {
-      background: var(--bg-surface);
+      background: var(--bg-surface-glass);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
       color: var(--accent-light);
       border-color: var(--border);
       border-bottom-color: var(--bg-surface);
@@ -1389,7 +1395,9 @@
     }
 
     .modal {
-      background: var(--bg-surface);
+      background: var(--bg-surface-glass);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
       border: 1px solid var(--border);
       border-radius: var(--radius);
       padding: 24px;
@@ -1574,7 +1582,9 @@
       position: fixed;
       bottom: 20px;
       right: 20px;
-      background: var(--bg-surface);
+      background: var(--bg-surface-glass);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
       border: 1px solid var(--border);
       border-radius: var(--radius-sm);
       padding: 10px 16px;

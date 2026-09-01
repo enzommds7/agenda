@@ -409,7 +409,16 @@
     function closeSidebar() {
       $('sidebar').classList.remove('open');
       $('sidebarBackdrop').classList.remove('show');
+      if (window.innerWidth <= 768 && location.hash !== '#editor') {
+        history.pushState({editor: true}, '', '#editor');
+      }
     }
+    window.addEventListener('popstate', (e) => {
+      if (window.innerWidth <= 768) {
+        if (location.hash !== '#editor') openSidebar();
+        else closeSidebar();
+      }
+    });
     $('hamburgerBtn').addEventListener('click', () => { 
       if (window.innerWidth <= 768) {
         $('sidebar').classList.contains('open') ? closeSidebar() : openSidebar(); 
@@ -499,7 +508,33 @@
       $('currentDaySubtitle').textContent = `Ultima edicao: ${new Date().toLocaleString('pt-BR')}`;
     }
     const doSave = debounce(saveCurrent, 700);
-    $('editor').addEventListener('input', () => { setSave('saving'); updateWC(); doSave(); });
+    function handleCalculator() {
+      const sel = window.getSelection();
+      if (!sel || !sel.rangeCount) return;
+      const node = sel.focusNode;
+      if (node && node.nodeType === Node.TEXT_NODE) {
+        const text = node.textContent;
+        const match = text.match(/([0-9][0-9\.\s\+\-\*\/\(\)]*)=$/);
+        if (match) {
+          try {
+            const expr = match[1].replace(/[^-()\d/*+.]/g, '');
+            if (!expr) return;
+            const res = new Function('return ' + expr)();
+            if (isFinite(res)) {
+              const replaced = text.replace(match[0], match[0] + ' ' + res);
+              node.textContent = replaced;
+              const range = document.createRange();
+              range.setStart(node, replaced.length);
+              range.collapse(true);
+              sel.removeAllRanges();
+              sel.addRange(range);
+            }
+          } catch(e) {}
+        }
+      }
+    }
+    
+    $('editor').addEventListener('input', () => { handleCalculator(); setSave('saving'); updateWC(); doSave(); });
 
     /* Tags in editor */
     function renderTagsInEditor() {
