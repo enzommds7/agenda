@@ -167,6 +167,174 @@
     function closeModal() { $('modal-overlay').classList.remove('show'); }
     $('modal-overlay').addEventListener('click', e => { if (e.target === $('modal-overlay')) closeModal(); });
 
+    
+    /* ══════════ AI GEMINI INTEGRATION ══════════ */
+    let geminiApiKey = localStorage.getItem('geminiApiKey') || '';
+
+    if ($('geminiApiKeyInput')) {
+      $('geminiApiKeyInput').value = geminiApiKey;
+      $('saveApiKeyBtn').addEventListener('click', () => {
+        geminiApiKey = $('geminiApiKeyInput').value.trim();
+        localStorage.setItem('geminiApiKey', geminiApiKey);
+        showToast('Chave API salva com sucesso!', false);
+      });
+    }
+
+    if ($('tb-ai')) {
+      $('tb-ai').addEventListener('click', () => {
+        if (!geminiApiKey) {
+          showToast('Por favor, configure sua Chave da API Gemini nas configurações.', true);
+          $('settings-overlay').classList.add('show');
+          return;
+        }
+        $('ai-overlay').classList.add('show');
+      });
+    }
+
+    if ($('aiBtnCancel')) {
+      $('aiBtnCancel').addEventListener('click', () => {
+        $('ai-overlay').classList.remove('show');
+      });
+      $('ai-overlay').addEventListener('click', (e) => {
+        if (e.target === $('ai-overlay')) $('ai-overlay').classList.remove('show');
+      });
+    }
+
+    async function callGemini(prompt, systemInstruction = '') {
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiApiKey}`;
+      const body = {
+        contents: [{ parts: [{ text: prompt }] }]
+      };
+      if (systemInstruction) {
+        body.systemInstruction = { parts: [{ text: systemInstruction }] };
+      }
+      
+      try {
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        });
+        
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error?.message || 'Erro na API');
+        
+        return data.candidates[0].content.parts[0].text;
+      } catch (error) {
+        console.error('Gemini Error:', error);
+        showToast('Erro na IA: ' + error.message, true);
+        return null;
+      }
+    }
+
+    function setAILoading(btnId, isLoading, originalText) {
+      const btn = $(btnId);
+      if (!btn) return;
+      if (isLoading) {
+        btn.disabled = true;
+        btn.textContent = '⏳ Processando...';
+        $('editor').contentEditable = "false";
+      } else {
+        btn.disabled = false;
+        btn.textContent = originalText;
+        $('editor').contentEditable = "true";
+        $('ai-overlay').classList.remove('show');
+      }
+    }
+
+    // AI Action: Improve Text
+    if ($('aiBtnImprove')) {
+      $('aiBtnImprove').addEventListener('click', async () => {
+        const sel = window.getSelection();
+        let text = sel.toString();
+        let isSelection = true;
+        
+        if (!text.trim()) {
+          text = $('editor').innerText;
+          isSelection = false;
+        }
+        
+        if (!text.trim()) {
+          showToast('Anotação vazia.', true);
+          return;
+        }
+        
+        setAILoading('aiBtnImprove', true, '✨ Melhorar Texto Selecionado');
+        
+        const prompt = `Melhore o seguinte texto corrigindo erros gramaticais e deixando-o mais claro e profissional. Mantenha a mesma linguagem e tom original. Responda apenas com o texto melhorado:\n\n${text}`;
+        
+        const result = await callGemini(prompt);
+        
+        if (result) {
+          if (isSelection) {
+            // Replace selection
+            document.execCommand('insertText', false, result);
+          } else {
+            // Replace all text (keep basic formatting if possible, though innerText loses HTML)
+            $('editor').innerText = result;
+          }
+          doSave();
+          updateWC();
+          showToast('Texto melhorado com sucesso!', false);
+        }
+        
+        setAILoading('aiBtnImprove', false, '✨ Melhorar Texto Selecionado');
+      });
+    }
+
+    // AI Action: Summarize
+    if ($('aiBtnSummarize')) {
+      $('aiBtnSummarize').addEventListener('click', async () => {
+        const text = $('editor').innerText;
+        if (!text.trim()) return showToast('Anotação vazia.', true);
+        
+        setAILoading('aiBtnSummarize', true, '📝 Resumir o Dia');
+        
+        const prompt = `Resuma os pontos principais do seguinte diário/anotação em um formato de lista com tópicos markdown (bullet points). Seja conciso. Anotação:\n\n${text}`;
+        
+        const result = await callGemini(prompt);
+        
+        if (result) {
+          // Append HTML to editor
+          let htmlResult = '<br><br><strong>✨ Resumo da IA:</strong><br>';
+          htmlResult += result.replace(/\n/g, '<br>');
+          $('editor').innerHTML += htmlResult;
+          
+          doSave();
+          updateWC();
+          showToast('Resumo gerado!', false);
+        }
+        
+        setAILoading('aiBtnSummarize', false, '📝 Resumir o Dia');
+      });
+    }
+
+    // AI Action: Auto Tags
+    if ($('aiBtnTags')) {
+      $('aiBtnTags').addEventListener('click', async () => {
+        const text = $('editor').innerText;
+        if (!text.trim()) return showToast('Anotação vazia.', true);
+        
+        setAILoading('aiBtnTags', true, '🏷️ Gerar Auto-Tags');
+        
+        const prompt = `Leia a anotação abaixo e gere até 5 palavras-chave (tags) relevantes. Responda APENAS com as tags separadas por vírgula, sem usar o símbolo #. Exemplo: estudo, trabalho, reunião.\n\n${text}`;
+        
+        const result = await callGemini(prompt);
+        
+        if (result) {
+          const newTags = result.split(',').map(t => t.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '')).filter(t => t);
+          newTags.forEach(t => {
+            if (!currentTags.includes(t)) currentTags.push(t);
+          });
+          renderTagsInEditor();
+          doSave();
+          showToast('Tags geradas!', false);
+        }
+        
+        setAILoading('aiBtnTags', false, '🏷️ Gerar Auto-Tags');
+      });
+    }
+
     /* ────── Settings ────── */
     function openSettings() {
       const isCloud = !!(currentUser && !currentUser.isAnonymous && FB_ON);
@@ -297,13 +465,56 @@
       });
     });
 
+    
+    // Avatar Upload Logic
+    const avatarInput = document.createElement('input');
+    avatarInput.type = 'file';
+    avatarInput.accept = 'image/*';
+    avatarInput.style.display = 'none';
+    document.body.appendChild(avatarInput);
+
+    $('userAvatar').addEventListener('click', () => avatarInput.click());
+
+    avatarInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+          const size = 150;
+          canvas.width = size;
+          canvas.height = size;
+          
+          const minDim = Math.min(img.width, img.height);
+          const startX = (img.width - minDim) / 2;
+          const startY = (img.height - minDim) / 2;
+          
+          ctx.drawImage(img, startX, startY, minDim, minDim, 0, 0, size, size);
+          const base64 = canvas.toDataURL('image/jpeg', 0.8);
+          
+          localStorage.setItem('userAvatarBase64', base64);
+          $('userAvatar').innerHTML = '<img src="' + base64 + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
+          
+          if (currentUser && FB_ON) {
+            db.collection('users').doc(currentUser.uid).set({ avatar: base64 }, { merge: true });
+          }
+        };
+        img.src = event.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
     function updateUserBar() {
       const bar = $('userBar');
       if (currentUser && !currentUser.isAnonymous) {
         bar.style.display = 'flex';
         const email = currentUser.email || '';
         $('userEmail').textContent = email;
-        $('userAvatar').textContent = (email[0] || '?').toUpperCase();
+        const savedAvatar = localStorage.getItem('userAvatarBase64');
+        if(savedAvatar) $('userAvatar').innerHTML = '<img src="' + savedAvatar + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
+        else $('userAvatar').textContent = (email[0] || '?').toUpperCase();
         $('userMode').textContent = FB_ON ? 'Sincronizado na nuvem' : 'Modo local';
         setSyncStatus('synced');
       } else if (currentUser === null) {
@@ -956,7 +1167,15 @@ $('lightbox').addEventListener('click', e => { if(e.target === $('lightbox')) $(
           if (user) {
             localStorage.setItem(SK_MODE, 'online');
             hideAuthScreen();
+            
+            db.collection('users').doc(user.uid).get().then(doc => {
+              if (doc.exists && doc.data().avatar) {
+                localStorage.setItem('userAvatarBase64', doc.data().avatar);
+                updateUserBar();
+              }
+            });
             await initApp();
+
           } else {
             const mode = localStorage.getItem(SK_MODE);
             if (mode === 'offline') {

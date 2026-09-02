@@ -17,8 +17,8 @@
       --bg-input: rgba(255, 255, 255, 0.05);
       --border: rgba(255, 255, 255, 0.1);
       --border-focus: rgba(64, 180, 166, 0.5);
-      --accent: #40B4A6;
-      --accent-light: #52C7B8;
+      --accent: #8E8E93;
+      --accent-light: #AEAEB2;
       --accent-glow: rgba(64, 180, 166, 0.2);
       --gold: #E9C46A;
       --gold-light: #F4A261;
@@ -46,8 +46,8 @@
       --bg-input: rgba(0, 0, 0, 0.03);
       --border: rgba(0, 0, 0, 0.08);
       --border-focus: rgba(42, 157, 143, 0.3);
-      --accent: #2A9D8F;
-      --accent-light: #40B4A6;
+      --accent: #6B7280;
+      --accent-light: #4B5563;
       --accent-glow: rgba(42, 157, 143, 0.15);
       --gold: #E9C46A;
       --gold-light: #F4A261;
@@ -105,7 +105,8 @@
     .auth-logo-icon {
       width: 46px;
       height: 46px;
-      background: linear-gradient(135deg, var(--accent), var(--gold));
+      background: var(--bg-surface-glass);
+      border: 1px solid var(--border);
       border-radius: 14px;
       display: flex;
       align-items: center;
@@ -218,7 +219,8 @@
     .auth-btn {
       width: 100%;
       padding: 13px;
-      background: linear-gradient(135deg, var(--accent), #7c3aed);
+      background: var(--bg-surface-glass);
+      border: 1px solid var(--border);
       border: none;
       border-radius: var(--radius-sm);
       color: #fff;
@@ -355,16 +357,12 @@
     }
 
     .logo-icon {
-      width: 34px;
-      height: 34px;
-      background: linear-gradient(135deg, var(--accent), var(--gold));
-      border-radius: 9px;
+      width: 32px;
+      height: 32px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 16px;
-      flex-shrink: 0;
-      box-shadow: 0 0 14px var(--accent-glow);
+      color: var(--text-primary);
     }
 
     .logo h1 {
@@ -416,7 +414,8 @@
       width: 28px;
       height: 28px;
       border-radius: 50%;
-      background: linear-gradient(135deg, var(--accent), var(--gold));
+      background: var(--bg-surface-glass);
+      border: 1px solid var(--border);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -424,6 +423,8 @@
       font-weight: 700;
       color: #fff;
       flex-shrink: 0;
+      overflow: hidden;
+      cursor: pointer;
     }
 
     .user-info {
@@ -535,7 +536,8 @@
       gap: 6px;
       width: 100%;
       padding: 9px;
-      background: linear-gradient(135deg, var(--accent), #7c3aed);
+      background: var(--bg-surface-glass);
+      border: 1px solid var(--border);
       border: none;
       border-radius: var(--radius-sm);
       color: #fff;
@@ -680,8 +682,8 @@
     }
 
     .cal-day.active-day {
-      background: var(--accent);
-      color: #fff;
+      background: var(--text-primary);
+      color: var(--bg-deep);
       font-weight: 700;
     }
 
@@ -1374,7 +1376,8 @@
       align-items: center;
       gap: 8px;
       padding: 11px 22px;
-      background: linear-gradient(135deg, var(--accent), #7c3aed);
+      background: var(--bg-surface-glass);
+      border: 1px solid var(--border);
       border: none;
       border-radius: var(--radius);
       color: #fff;
@@ -1530,7 +1533,8 @@
 
     .btn-primary {
       padding: 7px 13px;
-      background: linear-gradient(135deg, var(--accent), #7c3aed);
+      background: var(--bg-surface-glass);
+      border: 1px solid var(--border);
       border: none;
       border-radius: var(--radius-sm);
       color: #fff;
